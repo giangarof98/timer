@@ -15,10 +15,10 @@ class Timer {
 
     start = () => {
         if(this.onStart){
-            this.onStart();
+            this.onStart(this.getTime);
         }
         this.tick();
-        this.interval = setInterval(this.tick, 1000);
+        this.interval = setInterval(this.tick, 50);
     }
 
     pause = () => {
@@ -32,9 +32,9 @@ class Timer {
                 this.onComplete();
             }
         } else{
-            this.getTime = this.getTime - 1;
+            this.getTime = this.getTime - .05;
             if(this.onTick){
-                this.onTick();
+                this.onTick(this.getTime);
             }
         }
     }
@@ -44,7 +44,7 @@ class Timer {
     }
 
     set getTime(time){
-        this.durationInput.value = time;
+        this.durationInput.value = time.toFixed(2);
     }
 
 
@@ -54,12 +54,20 @@ const durationInput = document.querySelector('#duration');
 const startButton = document.querySelector('#start');
 const pauseButton = document.querySelector('#pause');
 
+const circle = document.querySelector('circle');
+const perimeter = circle.getAttribute('r') * 2 * Math.PI;
+
+circle.setAttribute('stroke-dasharray', perimeter)
+let duration;
+
 const timer = new Timer(durationInput, startButton, pauseButton, {
-    onStart(){
+    onStart(total){
         console.log('started');
+        duration = total;
     },
-    onTick(){
-        console.log('ticked down');
+    onTick(getTime){
+        circle.setAttribute('stroke-dashoffset', 
+        perimeter * getTime / duration - perimeter);
     },
     onComplete(){
         console.log('Completed!');
